@@ -1,11 +1,17 @@
 var webpack = require('webpack');
 var path = require('path');
 var webpackMerge = require('webpack-merge');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+var extractSCSS = new ExtractTextPlugin('main.css');
+var extractHTML = new ExtractTextPlugin('index.html');
 
 // Webpack Config
 var webpackConfig = {
   entry: {
     'main': './src/main.browser.ts',
+    'indexHtml': './src/index.html',
+    'mainScss': './src/css/main.scss'
   },
 
   output: {
@@ -22,6 +28,8 @@ var webpackConfig = {
         // your Angular Async Route paths relative to this root directory
       }
     ),
+    extractSCSS,
+    extractHTML
   ],
 
   module: {
@@ -35,8 +43,16 @@ var webpackConfig = {
           'angular2-router-loader'
         ]
       },
-      { test: /\.css$/, loaders: ['to-string-loader', 'css-loader'] },
-      { test: /\.html$/, loader: 'raw-loader' }
+      // sass / css files
+      { test: /\.scss$/, exclude: /node_modules|main\.scss/, loaders: ['to-string-loader', 'css-loader', 'sass-loader'] },
+      { test: /main\.scss$/, exclude: /node_modules/, loader: extractSCSS.extract({use: ['css-loader', 'sass-loader']}) },
+      { test: /\.css$/, exclude: /node_modules/, loaders: ['to-string-loader', 'css-loader'] },
+      // html files
+      { test: /\.html$/, exclude: /node_modules|index\.html/, loader: 'html-loader' },
+      { test: /index\.html$/, exclude: /node_modules/, loader: extractHTML.extract({use: ['html-loader']}) },
+      // font-awesome
+      { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?name=fonts/[name].[ext]&limit=10000&minetype=application/font-woff" },
+      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader?name=fonts/[name].[ext]'},
     ]
   }
 

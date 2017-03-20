@@ -1,0 +1,9 @@
+@import "../../node_modules/foundation-sites/scss/foundation";
+@include foundation-everything;
+// font-awesome path change
+$fa-font-path:        "./fontawesome/font";
+@import "./fontawesome/font-awesome";
+
+body {
+    
+}
